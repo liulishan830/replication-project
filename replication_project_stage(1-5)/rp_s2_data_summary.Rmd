@@ -1,0 +1,154 @@
+---
+title: "The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"
+author: "Liu Lishan^[Graduate School of Economics]"
+output: pdf_document
+fontsize: 12pt
+classoption: a4paper
+---
+
+```{r include=FALSE}
+library(readr)
+library(knitr)
+library(markdown)
+library(fBasics)
+library(ggplot2)
+library(xtable)
+```
+
+# Definition of variables
+gdppc: GDP per capita, 2000 $ constant
+
+remit: Migrant remittances, % GDP
+
+inv: Investment/Gross fixed capital formation (% of GDP)
+
+gs: Gross savings, % GDP
+
+depint: Deposit interest rate
+
+lendint: Lending interest rate
+
+open: Openness as a ratio of imports and exports on GDP, %
+
+inflat: Inflation rate measured by the change in Consumer Price Index
+
+aid: Foreign aid (Official Development Assistance), % of GDP
+
+# Summary statistics for savings model
+
+```{r}
+sm<-read.csv("E:/dataproject/replication-project/data/sm.csv",
+             fileEncoding="UTF-8-BOM",check.names=FALSE,
+             header=TRUE,as.is=TRUE,sep=",",na.strings = "")
+dim(sm)
+names(sm)
+mode(sm)
+class(sm)
+head(sm)
+basicStats(sm[,3:8])
+table1<-basicStats(sm[,3:8])
+table11<-as.matrix(table1)
+table111<-t(table11)
+```
+
+```{r results='asis'}
+options(xtable.comment = FALSE)
+print.xtable(xtable(table111[,c(7,8,3,4,14)]),size="small")
+```
+
+# Summary statistics for investment model
+
+```{r}
+im<-read.csv("E:/dataproject/replication-project/data/im.csv",
+                   fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,
+                   as.is=TRUE,sep=",",na.strings = "")
+dim(im)
+names(im)
+mode(im)
+class(im)
+head(im)
+basicStats(im[,3:9])
+table2<-basicStats(im[,3:9])
+table22<-as.matrix(table2)
+table222<-t(table22)
+```
+
+```{r results='asis'}
+options(xtable.comment = FALSE)
+print.xtable(xtable(table222[,c(7,8,3,4,14)]),size="small")
+```
+
+# Plot based on data for SSA 1980-2008
+
+```{r}
+ssa<-read.csv("E:/dataproject/replication-project/data/ssa.csv",
+              fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,
+              as.is=TRUE,sep=",",na.strings="")
+dim(ssa)
+names(ssa)
+mode(ssa)
+class(ssa)
+head(ssa)
+
+ssa1<-data.frame(year=ssa$year,ForeignAid=ssa$ForeignAid,Remittances=ssa$Remittances)
+ggplot()+
+  geom_line(data = ssa1,aes(x = year,y = ForeignAid,colour = 
+                              "ForeignAid"),size=1)+
+  geom_point(data = ssa1,aes(x = year,y = ForeignAid,colour = 
+                               "ForeignAid"),size=2)+
+  ylim(0,45000)+
+  geom_line(data = ssa1,aes(x = year,y = Remittances,colour =
+                              "Remittances"),size=1) + 
+  geom_point(data = ssa1,aes(x = year,y = Remittances,colour = 
+                               "Remittances"),size=2)+
+  scale_colour_manual("",values = c("ForeignAid" = "black",
+                                    "Remittances" = "gray"))+
+  xlab("year")+ylab("US$ millions")+
+  theme(text=element_text(size=12, family="Times"))+
+  ggtitle("Figure 1: Remittances and foreign aid in SSA, 1980–2008")
+
+ssa2<-data.frame(year=ssa$year,"ForeignAidShare"=ssa$ForeignAidShare,
+                 RemittancesShare=ssa$RemittancesShare)
+ggplot()+
+  geom_line(data = ssa2,aes(x = year,y = ForeignAidShare,colour = 
+                              "ForeignAidShare"),size=1)+
+  ylim(0,30)+
+  geom_line(data = ssa2,aes(x = year,y = RemittancesShare,colour =
+                              "RemittancesShare"),size=1)+
+  scale_colour_manual("",values = c("ForeignAidShare" = "black",
+                                    "RemittancesShare" = "gray"))+
+  xlab("year")+ylab("percentage of GDP")+
+  theme(text=element_text(size=12, family="Times"))+
+  ggtitle("Figure 2: Share of remittances compared to foreign aid in SSA,1980–2008")
+```
+
+# Obtaining the data
+
+As the authors state, "Our data come from two main sources: the World Development Indicators (WDI) 2006 of the World Bank and David Roodman’s Index of Donor Performance data compilation on foreign aid originally published in 2005 and updated in 2009 within the Center for Global Development". So I downloaded the data as they say from the two sources at the beginning. However, I find out that authors do not provide a full description of the data they use. 
+
+gdppc is defined as GDP per capita (2000 USD constant). But only GDP per capita (2010 USD constant) can be obtained from the the World Development Indicators (WDI). When I learn how to do empirical analysis, I think it will result in some difference. So I try my best to find data same as those authors use from other databases. Finally I obtained the data of GDP per capita (2000 USD constant) from Africa Development Indicators (ADI), which is also a database of the World Bank. This problem is solved.
+
+As the authors state, "We have an unbalanced panel because of insufficient data on certain periods with two samples of 37 and 34 SSA countries that have sufficient data over the period 1980–2004." Due to their incomplete description of the data they use, actually I am not sure how sufficient it is. So I decided to obtain the data as sufficient as possible. After a long time search, finally I obtain the data mainly from the World Development Indicators (WDI) of the World Bank, Africa Development Indicators (ADI) of the World Bank and World Economic Outlook (WEO) Database of International Monetary Fund (IMF). Foreign Aid (% GDP) and Openness can be got by simple calculation based on data from these Database.
+
+# Comparison
+
+There are several differences between summary statistics for my data with those in the article.
+
+First of all, when I evaluate the data I obtained, I find that my observations are more than the authors'. As I mentioned before, I am not sure "how sufficient" do the authors mean because of incomplete description. So I obtain the data as sufficient as possible. The possible reason may be that I refer to more databases and get more sufficient data than authors. Some countries only have one or two variables' data that are not recorded in one database but recorded in another. I completed the data from more databases. So the number of observations will also increase.
+
+Second, as the World Bank declares in their website about Data Compilation Methodology, "Our comprehensive publications World Development Indicators and International Debt Statistics contain data that generally rely on official sources, although some adjustments are made in the balance of payments to account for fiscal/calendar-year differences. Within these publications we attempt to present data that are consistent in definition, timing and methods. Even so, updates and revisions over time may introduce discrepancies from one edition to the next." Updates and revisions over time are very common for most databases. So there may be differences between the data I have collected now and those collected by the authors about ten years ago. 
+
+The most obvious difference is about Share of Foreign Aid (% GDP) in $Figure\ 2$. I calculate based on World Bank Data. There are data of Foreign Aid (2015 USD constant), Foreign Aid (current USD), GDP per capita (2000 USD constant), GDP (2010 USD constant) and GDP (current USD). So I calculate by 
+
+$$
+Foreign\ Aid\ (percentage\ of\ GDP) =[ \frac{Foreign\ Aid\ (current\ USD)}{GDP\ (current\ USD)}]*100
+$$
+I checked it several times and there should be no mistake. However, my results are much different from the authors'. I think the authors may have made a mistake. Fortunately, this is just a description of the overall situation in sub-Saharan Africa, not included in the panel data. The data of Foreign Aid (% GDP) of different countries in different years in the panel are similar. So the mistake does not affect the empirical process.
+
+I also calculated the Openness according to the authors' definition. Openness refers to a ratio of imports and exports on GDP. There are data of Imports of goods and services (% of GDP) and Exports of goods and services (% of GDP) in World Bank. Add them together to get Openness. Our results are similar.
+
+In addition to the difficulty of obtaining sufficient data, the most difficult part is to learn to how to use packages. Besides the learning in class, I have spent much time learning the further usage of the xtable and ggplot2 packages by R's help and Google. In particular, I learned how to draw a line chart with multiple polylines.
+
+# References
+Methodologies. (n.d.). Retrieved from
+https://datahelpdesk.worldbank.org/knowledgebase/articles/906531-methodologies.

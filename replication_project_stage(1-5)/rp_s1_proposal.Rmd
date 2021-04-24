@@ -1,0 +1,35 @@
+---
+title: "The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"
+author: "Liu Lishan^[Graduate School of Economics]"
+output: pdf_document
+fontsize: 12pt
+classoption: a4paper
+---
+
+1. What is the paper about? Theories, models, etc.
+
+Migrant remittances reached $21 billion in sub-Saharan Africa (SSA) in 2008 according to the World Bank estimates. Despite these important flows, few macroeconomic studies have been conducted on this topic in SSA compared to other developing regions. The existing studies on the impact of remittances in SSA have been mostly in the form of case studies at the microeconomic level or reports. The objective of this paper is to fill in this gap by investigating the impact of remittances on savings and investment in respective samples of 37 and 34 SSA countries over the period 1980-2004. It also analyzes comparatively the effectiveness of remittances and foreign aid in promoting savings and investment.
+
+2. What type of econometric models (e.g. linear regression model) and estimation techniques (e.g. ordinary least squares regression) does it use?
+
+The model is a Simultaneous Linear Equation Model (SEM). 
+
+OLS and instrumental variables (2SLS) with country fixed-effects are used as main estimations methods.
+
+Other techniques: Hausman test, White's method and so on.
+
+3. What are the important variables used in these models?
+
+First/savings model: Savings (% GDP), GDP per capita ($ constant), Remittances (% GDP), Foreign Aid (% GDP), Deposit interest rate (nominal) and Inflation.
+
+Second/investment model: Investment (% GDP), GDP per capita ($ constant), Remittances (% GDP), Foreign aid (% GDP), Lending interest rate (nominal), Openness and Savings (% GDP).
+
+4. What data does it use and where will you obtain it from?
+
+Data come from two main sources: the World Development Indicators 2006 of the World Bank and David Roodman’s Index of Donor Performance data compilation on foreign aid originally published in 2005 and updated in 2009 within the Center for Global Development.
+
+I will obtain it from the World Bank Database.
+
+5. Summarise the main empirical results.
+
+The authors find that both remittances and foreign aid positively and significantly influence savings and investment in SSA,meaning that contrary to most conclusions found in the literature,migrant remittances in SSA are not only and entirely spent in basic consumption needs. They also find that, although the volume and share of remittances are lower than foreign aid, remittances have more positive impact on savings and investment. Remittances, by being directly received by people in need and not by governments as intermediaries, would serve more households's interests and be more effective in favouring economic development than foreign aid. However, when efficiently used in a good institutional, political and economic environment, foreign aid can act as a complement to remittances by allowing vulnerable households to have income above the threshold subsistence's level so they (or migrants) can use a larger share of remittances for savings and investment purposes. The results also suggest that remittances may have indirect positive effects on growth in SSA through savings and investment.

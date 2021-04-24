@@ -1,0 +1,23 @@
+---
+title: "The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"
+author: "Liu Lishan^[Graduate School of Economics]"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    fig_caption: true
+    citation_package: natbib
+bibliography: library.bib
+biblio-style: apa
+fontsize: 12pt
+classoption: a4paper
+---
+It is estimated by the World Bank that remittances has reached $21 billions in sub-Saharan Africa (SSA) by 2008. SSA is also one of the largest recipients of foreign aid. Aid allocation peaked in 2006, when SSA received over 30% of world aid. 
+
+
+The objective of the original article is to investigate the impact of remittances and foreign aid on savings and investment in respective samples of 37 and 34 SSA countries during 1980–2004. It uses linear regression models. OLS and instrumental variables (2SLS) with country fixed-effects are used as main estimations methods. For savings model, the variables are Savings (% GDP), GDP per capita (2000 \$ constant), Remittances (% GDP), Foreign Aid (% GDP), Deposit interest rate (nominal) and Inflation. For investment model, the variables are Investment (% GDP), GDP per capita (2000 \$ constant), Remittances (% GDP), Foreign aid (% GDP), Lending interest rate (nominal), Openness and Savings (% GDP). The authors find that both remittances and foreign aid positively and significantly influence savings and investment in SSA,meaning that contrary to most conclusions found in the literature,migrant remittances in SSA are not only and entirely spent in basic consumption needs.
+
+I obtain the data mainly from the World Development Indicators (WDI) of the World Bank, Africa Development Indicators (ADI) of the World Bank and World Economic Outlook (WEO) Database of International Monetary Fund (IMF). By following the authors’ empirical process, I get results where some parts are similar but other parts are different.
+
+In what follows, Section 2 presents the review of literature and economic theory, including the determinants of savings and investment, Section 3 describes variables and data, Section 4 specifies the models and econometric method, Section 5 presents and analyzes the empirical results and Section 6 is the summary.

@@ -1,0 +1,197 @@
+---
+title: "The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"
+author: "Liu Lishan^[Graduate School of Economics]"
+output: pdf_document
+fontsize: 12pt
+classoption: a4paper
+---
+
+```{r include=FALSE}
+library(readr)
+library(knitr)
+library(markdown)
+library(fBasics)
+library(plm)
+library(sandwich)
+library(lmtest)
+library(utils)
+library(stargazer)
+```
+
+In this stage, I will list the detailed information of the analysis results of each model by following the authors' empirical process.
+
+# Definition of variables
+gdppc: GDP per capita, 2000 $ constant
+
+remit: Migrant remittances, % GDP
+
+inv: Investment/Gross fixed capital formation (% of GDP)
+
+gs: Gross savings, % GDP
+
+depint: Deposit interest rate
+
+lendint: Lending interest rate
+
+open: Openness as a ratio of imports and exports on GDP, %
+
+inflat: Inflation rate measured by the change in Consumer Price Index
+
+aid: Foreign aid (Official Development Assistance), % of GDP
+
+
+# Savings model
+$$
+gs_{it} = \beta_0 + \beta_1gdppc_{it} + \beta_2remit_{it} + \beta_3aid_{it} + \beta_4depint_{it} + \beta_5inflat_{it} + \alpha_i + \epsilon_{it}
+$$
+
+```{r, warning=FALSE}
+# F-test
+sm<-read.csv("E:/dataproject/replication-project/data/sm.csv",
+             fileEncoding="UTF-8-BOM",check.names=FALSE,
+             header=TRUE,as.is=TRUE,sep=",",na.strings = "")
+sm<-pdata.frame(sm,index=c("country","year"))
+head(sm)
+smfe<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model = "within")
+smpool<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="pooling")
+pFtest(smfe,smpool)
+```
+
+The F-test shows the null hypothesis of individual homogeneity is rejected at the 1 per cent level and that individual specificities are presented.
+
+```{r}
+# Hausman test
+smre<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="random",
+          random.method="swar")
+phtest(smfe,smre)
+```
+
+At this step, I check fixed effect or random effect by performing the Hausman test. The results show the fixed effects model is good at the 5 per cent level.
+
+As the authors state, "The introduction of country-specific effects in the model will allow considering a possible presence of heterogeneity of data and unobservable country specificities and characteristics correlated with the regressors". So I estimate the relations with the OLS (country fixed effects) method as they do.
+
+```{r}
+# OLS (country fixed effects)
+smfe1<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="within",
+           effect = "individual")
+summary(smfe1)
+bptest(smfe1)
+# Using White’s method correction solves the problem of heteroscedasticity.
+coeftest(smfe1,vcov=vcovHC(smfe1,method='white1',type='HC0'))
+smse1<-coeftest(smfe1,vcov=vcovHC(smfe1,method='white1',type='HC0'))
+```
+
+As authors state, "the former literature underlines the possibility that some explanatory variables, such as GDP per capita, may be endogenous to both savings and investment. In this situation, our estimated coefficients with OLS method may be biased...we control for the potential problem of simultaneity bias by using ‘internal instruments’, where the potentially endogenous variables on the right-hand side are replaced with their own lagged values. In the econometric theory, a two-period lag is sufficient to get good instrument (exogenous). We then re-estimate our models and apply this solution with the instrumental variables method (2SLS)".
+
+```{r, warning=FALSE}
+# 2SLS instrumental variables method
+sm$lgdppc1 = plm::lag(sm$gdppc)
+sm$lgdppc2 = plm::lag(sm$lgdppc1)
+head(sm)
+smfe2<-plm(gs~gdppc+remit+aid+depint+inflat|
+             remit+aid+depint+inflat+lgdppc1+lgdppc2,
+           data=sm,model="within",effect="individual")
+summary(smfe2)
+bptest(smfe2)
+# Using White’s method correction solves the problem of heteroscedasticity.
+coeftest(smfe2,vcov.=vcovHC(smfe2,method='white1',type='HC0'))
+smse2<-coeftest(smfe2,vcov.=vcovHC(smfe2,method='white1',type='HC0'))
+```
+
+# Investment model
+$$
+inv_{it} = \beta_0 + \beta_1gdppc_{it} + \beta_2remit_{it} + \beta_3aid_{it} + \beta_4lendint_{it} + \beta_5gs_{it} + \beta_6open_{it} + \alpha_i + \epsilon_{it}
+$$
+
+As remittances and savings may also be correlated, use the residual series collected from the estimation of savings-remittances equation as a proxy of savings variable. Corresponding to the country index, create a new data of investment model.  
+```{r include=FALSE}
+residuals(smfe)
+setwd("E:/dataproject/replication-project/data")
+write.table(residuals(smfe),"resid.csv",sep=",")
+```
+
+```{r}
+# F-test
+im_resid<-read.csv("E:/dataproject/replication-project/data/im_resid.csv",
+                   fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,
+                   as.is=TRUE,sep=",",na.strings = "")
+im_resid<-pdata.frame(im_resid,index=c("country","year"))
+head(im_resid)
+imfe<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="within")
+impool<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="pooling")
+pFtest(imfe,impool)
+```
+
+The F-test shows the null hypothesis of individual homogeneity is rejected at the 1 per cent level and that individual specificities are presented.
+
+```{r}
+# Hausman test
+imre<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="random",
+          random.method="swar")
+phtest(imfe,imre)
+```
+
+At this step, I check fixed effect or random effect by performing the Hausman test. The results show the fixed effects model is good at the 1 per cent level.
+
+As previously mentioned, I estimate the relations with the OLS (country fixed effects) method at first.
+
+```{r}
+# OLS (country fixed effects)
+imfe1<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="within",
+           effect = "individual")
+summary(imfe1)
+bptest(imfe1)
+# Using White’s method correction solves the problem of heteroscedasticity.
+coeftest(imfe1,vcov.=vcovHC(imfe1,method='white1',type='HC0'))
+imse1<-coeftest(imfe1,vcov.=vcovHC(imfe1,method='white1',type='HC0'))
+```
+
+Re-estimate using the 2SLS, a two-period lag of GDP per capita as instrument (exogenous).
+
+```{r}
+# 2SLS instrumental variables method
+im_resid$lgdppc1 = plm::lag(im_resid$gdppc)
+im_resid$lgdppc2 = plm::lag(im_resid$lgdppc1)
+head(im_resid)
+imfe2<-plm(inv~gdppc+remit+aid+lendint+open+gs|
+             remit+aid+lendint+open+gs+lgdppc1+lgdppc2,
+           data=im_resid,model="within", effect="individual")
+summary(imfe2)
+bptest(imfe2)
+# Using White’s method correction solves the problem of heteroscedasticity.
+coeftest(imfe2,vcov.=vcovHC(imfe2,method='white1',type='HC0'))
+imse2<-coeftest(imfe2,vcov.=vcovHC(imfe2,method='white1',type='HC0'))
+```
+
+# Comparison
+
+Table 1 and 2 are at the end of the file.
+
+## Differences
+In authors' results, GDP per capita and remittances both positively and significantly influences savings and investment. In my results, GDP per capita only positively influences investment and remittances negatively and significantly influences investment.
+
+In authors' results, the coefficient of deposit interest is positive and significant at the 5 per cent level. In my results, the coefficient is negative and not significant.
+
+In authors' results, inflation is detrimental to savings. In my results, inflation positively influence savings. 
+
+In authors' results, economic openness encourages investment. In my results, openness does not have that influence.
+
+## Similarities 
+Foreign aid positively and significantly influences savings and investment.
+
+High lending interest rates inhibit investment. 
+
+Savings is also a determinant of investment; its coefficient is positive and significant at the 1 per cent level regardless to the estimation method used.
+
+Both of our robustness test using 2SLS method (column 2) does not significantly change the results.
+
+# Difficulties
+The process of learning how to do linear panel regression and use plm and stargazer (showing robust standard erros) package cost much time. I refer to many sources from the Internet, especially from CRAN.
+
+```{r, results='asis', echo=FALSE}
+stargazer(smfe1,smfe2,title="Regression Results for Savings model",se = list(smse1[,2], smse2[,2]),header=F,no.space = TRUE)
+```
+
+```{r, results='asis', echo=FALSE}
+stargazer(imfe1,imfe2,title="Regression Results for Investment Model",se = list(imse1[,2], imse2[,2]),header=F,no.space = TRUE)
+```
