@@ -1,0 +1,293 @@
+---
+title: "The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"
+author: "Liu Lishan^[Graduate School of Economics]"
+output: 
+  pdf_document: 
+    citation_package: natbib
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+bibliography: library.bib
+biblio-style: apa
+fontsize: 12pt
+classoption: a4paper
+---
+
+```{r include=FALSE}
+library(bookdown)
+library(tidyverse)
+library(readr)
+library(knitr)
+library(markdown)
+library(fBasics)
+library(xtable)
+library(plm)
+library(sandwich)
+library(lmtest)
+library(utils)
+library(stargazer)
+```
+
+# Introduction
+It is estimated by the World Bank that remittances have reached $21 billions in sub-Saharan Africa (SSA) by 2008. SSA is also one of the largest recipients of foreign aid. Aid allocation peaked in 2006 when SSA received over 30% of world aid. 
+
+The objective of the original article is to investigate the impact of remittances and foreign aid on savings and investment in respective samples of 37 and 34 SSA countries during 1980–2004. It uses linear regression models. OLS and instrumental variables (2SLS) with country fixed-effects are used as main estimations methods. For savings model, the variables are savings, GDP per capita, remittances, foreign aid, deposit interest rate and inflation. For investment model, the variables are investment, GDP per capita, remittances, foreign aid, lending interest rate, openness and savings. The authors find that both remittances and foreign aid positively and significantly influence savings and investment in SSA.
+
+I obtain the data mainly from the World Development Indicators (WDI) of the World Bank, the Africa Development Indicators (ADI) of the World Bank and the World Economic Outlook (WEO) of International Monetary Fund (IMF). By following the authors’ empirical process, I find that foreign aid positively and significantly influences savings and investment which is the same as the original results. But remittances do not have that influence, which is a little different from the authors' results.
+
+In what follows, Section 2 presents the review of literature and economic theory. Section 3 describes variables and data. Section 4 specifies the models and econometric method. Section 5 presents and analyzes the empirical results. Section 6 is the summary.
+
+# Literature and Economic Theory
+The economic literature on the link between foreign aid and development has been very abundant during the last 40 years. The results from these studies are mixed and vary widely depending on the sample and the econometric method used by authors. While the literature has extensively discussed the effectiveness of foreign aid in SSA, the impact of migrant remittances in this region received less attention, particularly at the macroeconomic level. On the current debate on migration and development, many researchers have pointed out that how migrants and households spend remittances have a significant effect on the development of local economies. Most of the earlier literatures argue that remittances are mainly used for consumption. However, the authors list several more recent studies in Latin America and Asia arguing remittances may also be used for investment. 
+
+## Determinants of Savings and Investment
+### Savings
+Economic theory, including Keynes, stated that savings are an increasing function of income level. For Friedman (1957), in his theory of permanent income, savings do not depend on long-term current income but permanent income. Ando and Modigliani (1963), in their "life cycle hypothesis of saving", consider that economic agents save money depending on their life cycle. They borrow when young, save during working period and spend during retirement. Snyder (1990) and Masson et al. (1998) found income per capita is an important omitted variable on the determinants of savings.
+
+The economic literature has also found an ambiguous effect of financial variables on national savings. The authors consider that high deposits interest rates mean higher future income, thereby encouraging households to save more. The size of the fiscal deficit or surplus could affect national savings, that is the sum of public and private savings. The Ricardian equivalence theorem (Ricardo 1817) states that increasing public deficits lead to an anticipation of future tax increase by economic agents, leading to an increase in savings.
+
+Based on the precautionary motive, uncertainties that are related to inflation may influence income. Inflation anticipation by economic agents may lead them to buy now what they will pay more expensively later and thus reduce their savings (Fischer, 1993).
+
+### Investment
+
+Serv´en and Solimano (1992) summarize the determinants of private investment in developing countries as domestic income, real interest rate and so on. The neoclassical theory of investment (Jorgensen,1963) and the accelerator theory consider that investment is a positive function of income. Neoclassical theory also suggests a possible negative relationship between real interest rates and investment. The ‘McKinnon and Shaw hypothesis’ (1973) argues that high interest rates, by encouraging savings that are more paid, increase the volume of available domestic credit, which increases investment. It suggested that financial development can foster economic development through the reduction of credit constraints for investment.
+
+The authors also list several literature that shows the degree of openness (exports and imports), appears to be related to investment.
+
+# Variables and Data
+Based on literature, the original study considers remittances, foreign aid, GDP per capita, deposit interest rate and inflation as determinants of savings. Remittances, foreign aid, GDP per capita, lending interest rate, openness, and savings are considered as determinants of investment. 
+
+|Variables|Definition|
+|---------|----------|
+|gs|Gross savings, % GDP|
+|gdppc|GDP per capita, 2000 \$ constant|
+|remit|Migrant remittances, % GDP|
+|aid|Foreign aid (ODA), % GDP|
+|depint|Deposit interest rate (nominal)|
+|inflat|Inflation rate (CPI)|
+|inv|Gross fixed capital formation, % GDP|
+|lendint| Lending interest rate (nominal)|
+|open|Openness as a ratio of imports and exports on GDP, %|
+
+## Data sources
+The authors' data come from two main sources: the World Development Indicators (WDI) 2006 of the World Bank and David Roodman’s Index of Donor Performance data compilation on foreign aid originally published in 2005 and updated in 2009 within the Center for Global Development. I downloaded the data from the two sources at first. However, I find that the authors do not provide a full description of the data they use. For example, gdppc is defined as GDP per capita (2000 \$ constant). But GDP per capita (2010 \$ constant) can be only obtained from the WDI. I think it may result in some differences. So I also obtain the data of GDP per capita (2000 \$ constant) from the Africa Development Indicators (ADI), which is also a database of the World Bank. This problem is solved.
+
+Moreover, as the authors state, "We have an unbalanced panel because of insufficient data on certain periods with two samples of 37 and 34 SSA countries that have sufficient data over the period 1980–2004." According to the World Bank, there are many reasons why data may not be available for some indicators for all countries and years. With an incomplete description of the data they use, I cannot know how sufficient that they mean. So I attempt to obtain the data as sufficient as possible. Finally, I obtain the data mainly from the World Development Indicators (WDI) of the World Bank, the Africa Development Indicators (ADI) of the World Bank and the World Economic Outlook (WEO) of International Monetary Fund (IMF).
+
+There are data of Foreign Aid (2015 \$ constant), Foreign Aid (current \$), GDP per capita (2000 \$ constant), GDP (2010 \$ constant) and GDP (current \$) in these databases. So I get Foreign Aid (% GDP) by calculation.
+
+$$
+Foreign\ Aid\ (\%\ GDP) =[ \frac{Foreign\ Aid\ (current\ \$)}{GDP\ (current\ \$)}]*100
+$$
+Openness refers to a ratio of imports and exports on GDP. There are data of Imports of goods and services (% of GDP) and Exports of goods and services (% of GDP) in databases. Add them together to get Openness. Our data are similar.
+
+## Summary statistics
+```{r,include=FALSE}
+sm<-read.csv("E:/dataproject/replication-project/data/sm.csv",fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,as.is=TRUE,sep=",",na.strings = "")
+basicStats(sm[,3:8])
+table1<-basicStats(sm[,3:8])
+table11<-as.matrix(table1)
+table111<-t(table11)
+```
+
+```{r ,results='asis',echo=FALSE}
+options(xtable.comment = FALSE)
+print.xtable(xtable(table111[,c(7,8,3,4,14)],caption = "Summary statistics for savings model"),size="\\small",caption.placement="top")
+```
+
+```{r,include=FALSE}
+im<-read.csv("E:/dataproject/replication-project/data/im.csv",fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,as.is=TRUE,sep=",",na.strings = "")
+basicStats(im[,3:9])
+table2<-basicStats(im[,3:9])
+table22<-as.matrix(table2)
+table222<-t(table22)
+```
+
+```{r ,results='asis',echo=FALSE}
+options(xtable.comment = FALSE)
+print.xtable(xtable(table222[,c(7,8,3,4,14)],caption = "Summary statistics for investment model"),size="\\small",caption.placement="top")
+```
+
+## Comparison
+There are several differences between summary statistics for my data with those in the article.
+
+Firstly, my observations for the time series are more than those of the authors. As mentioned above, I am not sure "how sufficient" do the authors mean due to incomplete description. So I obtain the data as sufficient as possible. The possible reason may be that I refer to more databases and get more sufficient data than authors. Some countries only have one or two variables' data that are not recorded in one database but recorded in another. Moreover, the databases have filled in some previously unrecorded data after 10 years. I completed the data from 3 databases. So the number of observations will also increase.
+
+Second, as the World Bank declares about Data Compilation Methodology, "Our comprehensive publications World Development Indicators and International Debt Statistics contain data that generally rely on official sources, although some adjustments are made in the balance of payments to account for fiscal/calendar-year differences. Within these publications, we attempt to present data that are consistent in definition, timing, and methods. Even so, updates and revisions over time may introduce discrepancies from one edition to the next." Updates and revisions over time are very common for most databases. So there may be differences between the data I have collected now and those collected by the authors about 10 years ago. 
+
+# Models and Econometric Method
+The objective is to estimate the impact of remittances and foreign aid on savings/investment in SSA from 1980 to 2004. The empirical study consists of two econometric models linking migrant remittances, foreign aid and savings/investment in SSA:
+
+The first equation is:
+$$
+gs_{it} = \beta_0 + \beta_1gdppc_{it} + \beta_2remit_{it} + \beta_3aid_{it} + \beta_4depint_{it} + \beta_5inflat_{it} + \alpha_i + \epsilon_{it}
+$$
+where $gs_{it}$ is savings of country $i$ at the date $t$, $gdppc_{it}$ is GDP per capita, $remit_{it}$ is migrant remittances, $aid_{it}$ is foreign aid, $depint_{it}$ is deposit interest rate, and $inflat_{it}$ is inflation. $\alpha_i$ is a country specific fixed-effects and $\epsilon_{it}$ is the error term.
+
+The second equation is:
+$$
+inv_{it} = \beta_0 + \beta_1gdppc_{it} + \beta_2remit_{it} + \beta_3aid_{it} + \beta_4lendint_{it} + \beta_5gs_{it} + \beta_6open_{it} + \alpha_i + \epsilon_{it}
+$$
+where $inv_{it}$ is investment of country $i$ at date $t$ , $gdppc_{it}$ is GDP per capita, $remit_{it}$ is remittances, $aid_{it}$ is foreign aid, $lendint_{it}$ is the lending interest rate, $open_{it}$ is openness and $gs_{it}$ is savings. $\alpha_i$ is the country fixed-effects and $\epsilon_{it}$ the error term.
+
+I have an unbalanced panel because of insufficient data on certain periods with two samples of 37 and 34 SSA countries that have sufficient data over the period 1980–2004. I mainly use plm package of R to do the empirical study by following the authors' steps.
+
+## Savings model
+\begin{itemize}
+\item [1)]
+```{r, include=FALSE}
+# F-test
+sm<-pdata.frame(sm,index=c("country","year"))
+smfe<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="within")
+smpool<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="pooling")
+pFtest(smfe,smpool)
+```
+Use the F test of individual effects based on the comparison of the within and the pooling model. The F-test shows the null hypothesis of individual homogeneity is rejected at the 1 per cent level and that individual specificities are presented.
+\item [2)]
+```{r,include=FALSE}
+# Hausman test
+smre<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="random",random.method="swar")
+phtest(smfe,smre)
+```
+Check fixed effect or random effect by performing the Hausman test. The results show the fixed effects model is better at the 5 per cent level.
+\item [3)]
+```{r,include=FALSE}
+# OLS (country fixed effects)
+smfe1<-plm(gs~gdppc+remit+aid+depint+inflat,data=sm,model="within",effect = "individual")
+# White’s method correction
+coeftest(smfe1,vcov=vcovHC(smfe1,method='white1',type='HC0'))
+smse1<-coeftest(smfe1,vcov=vcovHC(smfe1,method='white1',type='HC0'))
+```
+As the authors state, “The introduction of country-specific effects in the model will allow considering a possible presence of heterogeneity of data and unobservable country specificities and characteristics correlated with the regressors”. So I estimate the relations with the OLS (country fixed effects) method. And the problem of heterscedasticity is solved by White’s adjusted standard errors. 
+\item [4)]
+```{r,include=FALSE}
+# instrumental variables method
+sm$lgdppc1 = plm::lag(sm$gdppc)
+sm$lgdppc2 = plm::lag(sm$lgdppc1)
+smfe2<-plm(gs~gdppc+remit+aid+depint+inflat|
+             remit+aid+depint+inflat+lgdppc1+lgdppc2,
+           data=sm,model="within",effect="individual")
+# White’s method correction
+coeftest(smfe2,vcov.=vcovHC(smfe2,method='white1',type='HC0'))
+smse2<-coeftest(smfe2,vcov.=vcovHC(smfe2,method='white1',type='HC0'))
+```
+The authors state that GDP per capita may be endogenous to savings and investment. It is in this case difficult to assess the effect of an individual variable and to isolate its influence on savings and investment. So they perform a robustness test by using the Two-Stage Least Squares (2SLS) instrumental variables method. This method consists of finding variables that are highly correlated with the right-hand-side endogenous variables, but independent to the error term. They control for the potential problem by using ‘internal instruments’, where the potentially endogenous variables on the right-hand side are replaced with their own lagged values. In the econometric theory, a two-period lag is sufficient to get good instrument. 
+
+Here, at first I am not sure if other variables are endogenous, then I refer to reference (Loayza et al., 1999) they cited. I suppose only GDP per capita is endogenous to dependent variables. I perform a robustness test using the first and second lag of GDP per capita as instruments of GDP per capita. There are similar examples of instrumental variable estimators in plm package. So this step is not that complex. Also, the problem of heterscedasticity is solved by White’s adjusted standard errors.
+\end{itemize}
+
+## Investment model
+\begin{itemize}
+\item [1)]
+```{r include=FALSE}
+residuals(smfe1)
+setwd("E:/dataproject/replication-project/data")
+write.table(residuals(smfe1),"resid.csv",sep=",")
+```
+To solve the potential correlation problem between remittances and savings and between GDP per capita and savings, I extracted the residual series from the estimation of savings model equation as a proxy of savings variable in investment model. Corresponding to the country index, create a new dataset of investment model. Except this step, the estimate method is the same as savings model.
+\item [2)]
+```{r,include=FALSE}
+# F-test
+im_resid<-read.csv("E:/dataproject/replication-project/data/im_resid.csv",fileEncoding="UTF-8-BOM",check.names=FALSE,header=TRUE,as.is=TRUE,sep=",",na.strings = "")
+im_resid<-pdata.frame(im_resid,index=c("country","year"))
+imfe<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="within")
+impool<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="pooling")
+pFtest(imfe,impool)
+```
+The F-test shows the null hypothesis of individual homogeneity is rejected at the 1 per cent level and that individual specificities are presented.
+\item [3)]
+```{r,include=FALSE}
+# Hausman test
+imre<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="random",random.method="swar")
+phtest(imfe,imre)
+```
+The results of the Hausman test show the fixed effects model is good at the 1 per cent level.
+\item [4)]
+```{r,include=FALSE}
+# OLS (country fixed effects)
+imfe1<-plm(inv~gdppc+remit+aid+lendint+open+gs,data=im_resid,model="within",effect = "individual")
+# White’s method correction
+coeftest(imfe1,vcov.=vcovHC(imfe1,method='white1',type='HC0'))
+imse1<-coeftest(imfe1,vcov.=vcovHC(imfe1,method='white1',type='HC0'))
+```
+Estimate the relations with the OLS (country fixed effects) method with White's method correction.
+\item [5)]
+```{r,include=FALSE}
+# Instrumental variables method
+im_resid$lgdppc1 = plm::lag(im_resid$gdppc)
+im_resid$lgdppc2 = plm::lag(im_resid$lgdppc1)
+imfe2<-plm(inv~gdppc+remit+aid+lendint+open+gs|
+             remit+aid+lendint+open+gs+lgdppc1+lgdppc2,
+           data=im_resid,model="within", effect="individual")
+# White’s method correction
+coeftest(imfe2,vcov.=vcovHC(imfe2,method='white1',type='HC0'))
+imse2<-coeftest(imfe2,vcov.=vcovHC(imfe2,method='white1',type='HC0'))
+```
+Perform a robutness test using the first and second lag of GDP per capita as instruments of GDP per capita with White's method correction.
+\end{itemize}
+
+# Empirical Results
+```{r, results='asis', echo=FALSE}
+stargazer(smfe1,smfe2,title="Regression Results for Savings model",se = list(smse1[,2], smse2[,2]),header=F,no.space = TRUE,column.labels = c("OLS fixed effects","2SLS fixed effects"), single.row=TRUE,column.sep.width = "1pt")
+stargazer(imfe1,imfe2,title="Regression Results for Investment Model",se = list(imse1[,2], imse2[,2]),header=F,no.space = TRUE,column.labels = c("OLS fixed effects","2SLS fixed effects"), single.row=TRUE,column.sep.width = "1pt")
+```
+\newpage
+
+Based on the comparison between my results and those of the authors, most of our results are similar but there are still several discrepancies. In this report, I mainly discuss the discrepancies.
+
+My results show that deposit interest rate (nominal) has a negative correlation with savings and the influence is not significant, which is contrary to the results of the original paper. I notice that the literatures the authors cite use real interest rate as a determinant. But the authors use nominal interest rate as a determinant. For African countries, despite high nominal interest rates, real interest rates are often negative because of high inflation rates (Ndikumana, 2000), which cannot encourage savings. With more sufficient data, the problem may be revealed in the results. I think the authors have made a mistake on this point.
+
+The authors also add inflation as a determinant of savings, together with nominal deposit interest rate. But the influence of inflation is opposite to my results. On the one hand, as mentioned above, nominal interest rate equals real interest rate plus inflation rate, which means the two explanatory variables may be highly correlated. The potential collinearity reduces the precision of the estimate coefficients, which weakens the statistical power of the model. We might not be able to trust the p-values to identify statistically significant independent variables. With more sufficient data, the problem may be revealed in the results. On the other hand, my original data show that many African countries may experience high inflation for a period. Inflation anticipation may lead people to buy now what they will pay more expensively later and thus reduce their savings (Fischer, 1993). The authors may ignore this point.
+
+Our results of foreign aid's influence on savings and investment are almost the same. Foreign aid influences savings and investment positively and significantly. However, my results show that remittances have a positive correlation with savings but that it is not significant compared to the authors' results. It is also showed in my results that remittances negatively and significantly influence investment, which is different from the authors' results. The first reason may be that my observations for time series are more than those of authors because of more sufficient data. Some problems may be revealed. The proxy of savings vaiable of investment model is the residual series of the savings model. The potential unsolved colinearity mentioned above may influence both models. Secondly, I assume that it may result from the approach the authors deal with unbalanced data. They do not give sufficient description but only say a panel data method will be used. Although now many software can manage unbalanced data directly, there is some earlier research trying to balance the panel before estimation by removing some individuals, filling in some values (mean, mode, 0, etc.) or prediction of some unrecorded data, which will cause much difference, especially when using lag values as instrumental variables. Thirdly, I also refer to literatures that investigate remittances and economic development. I find out there may be omitted variables, such as exchange rate (Faini, 1994; Serv´en and Solimano, 1992). They may have correlations with both remittances (explanatory variable) and investment (dependent variable). The authors also mention this point in literature review but neglect it in models. Finally, even though some studies for Latin America and Asia found that migrants and households spend a share of remittances on investment goods (i.e. education, housing, and small business) (Mishra, 2005; Yang, 2004), remittances received in SSA during the period are much less than the two regions, nearly less than one-fifth of them. Most literatures suggest that for low-income countries, remittances are used for consumption. According to the UN, 31 countries are classified as least developed countries in SSA. Remittances may be used mainly for basic consumption.
+
+Updated and revision of data compilation methodology in the past 10 years may also be one of the reasons for discrepancies.
+
+# Summary
+The objective of this paper is to investigate the macroeconomic impact of remittances and foreign aid on savings and investment in SSA. For savings model, we get similar results that GDP per capita and foreign aid influence savings positively and significantly. For investment model, we get similar results that GDP per capita, foreign aid, openness, and savings influence investment positively and significantly, and that lending interest rate is negatively correlated with investment.
+
+As for discrepancies, my results show that remittances negatively and significantly influence investment in SSA, which is contrary to the authors' results. Remittances may be spent on basic consumption needs, especially in low-income countries, as argued by many literatures. Furthermore, deposit interest rates (nominal) and inflation's influences on savings are opposite to the authors' results, which may be assumed the authors do not consider the real interest rates or inflation anticipation.
+
+In addition to the difficulty of obtaining data and understand the econometric methods, it is also difficult to learn how to use packages. Based on the learning in class, I have spent much time learning the usage of plm, xtable, stargazer and ggplot2 packages from CRAN, Stack Overflow, Github and so on. And I also met problems on software update. I tried different methods to solve it. Fortunately, the developer corrected it in time. During the process of teaching myself a new econometric technique to replicate the empirical analysis, I get to know it is important to choose the right model that takes into account the economic implications of variables and sample size.
+
+Research is indeed always difficult with many unanticipated problems. By trying to solve these problems, I have a comprehensive understanding of how to do empirical papers. It will help me a lot in other research. 
+
+# Acknowledgements
+I would like to express my gratitude to all those who helped me. My deepest gratitude goes first to the Professor and the class TA for their encouragement and guidance. I also thank my classmates Chen Xiangyu, Wu Wanrui and Jessica Siegenthaler for their helpful suggestions. All errors are mine.
+
+# References
+Ando, A. and F. Modigliani (1963). The Life-CycleHypothesis of Saving: Aggregate Implications and Tests. American Economic
+Review, Vol. 53, pp. 55–84.
+
+Bald. (2011). The Impact of Remittances and Foreign Aid on Savings / Investment in Sub-Saharan Africa. African Development Review, 23(2), 247–262.
+
+Faini, R. (1994). Workers' remittances and the real exchange rate - A quantitative framework. Journal of Population Economics, 7(2), 235–245.
+
+Fischer, S. (1993). The Role of Macroeconomic Factors in Growth. Journal of Monetary Economics, Vol. 32, No. 3, pp. 485–512.
+
+Friedman, M. (1957). A Theory of the Consumption Function. Princeton University Press, Princeton, NJ.
+
+Jorgensen, D.W. (1963). Capital Theory and Investment Behavior. American Economic Review, Vol. 53, No. 2, pp. 247–59.
+
+Loayza, N. (1999). What Drives Private Saving across the World?. Central Bank of Chile Working Papers, No. 47.
+
+Masson, P., T. Bayoumi and H. Samiei (1998). International Evidence on the Determinants of Private Saving. World Bank
+Economic Review, Vol. 12, No. 3, pp. 483–501.
+
+McKinnon, R. (1973). Money and Capital in Economic Development. The Brookings Institution, Washington.
+
+Mishra, P. (2005). Macroeconomic Impact of Remittances in the Caribbean. International Monetary Fund, Washington, DC.
+
+Ndikumana, L. (2000). Financial Determinants of Domestic Investment in Sub-Saharan Africa: Evidence from Panel Data.
+World Development, Vol. 28, No. 2, pp. 381–400.
+
+Ricardo, D. (1817). On the Principles of Political Economy and Taxation. London.
+
+Serv´en, L. and A. Solimano (1992). Private Investment and Macroeconomic Adjustment: A Survey. The World Bank Research
+Observer, Vol. 7, No. 1, pp. 95–114.
+
+Snyder, D. (1990). Foreign Aid and Domestic Savings: A Spurious Correlation?. Economic Development and Cultural Change, Vol. 39, No. 1, pp. 175–81.
+
+Yang, D. (2004). International Migration, Human Capital, and Entrepreneurship: Evidence from Philippine Migrants’ Exchange
+Rate Shocks. mimeo, Ford School of Public Policy, University of Michigan.
