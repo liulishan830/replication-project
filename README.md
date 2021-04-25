@@ -2,7 +2,7 @@
 
 Code for replication of the paper ["The Impact of Remittances and Foreign Aid on Savings/Investment in Sub-Saharan Africa"](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-8268.2011.00284.x).
 
-(A replication project in Econometrics class. Publish it again.)
+(计量课的论文复现项目，之前在课程的private repository，转到自己github，以作记录)
 
 ## Replication Project Stage 1: Article Proposal
 Select one published applied econometrics article. Submit your article and a summary of the article for approval.
